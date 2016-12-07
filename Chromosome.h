@@ -37,6 +37,10 @@ namespace EvoLisa {
 				this->genes.push_back (g);
 			this->Size = c->Size;
 		}
+		
+		~Chromosome () {
+			genes.clear ();
+		}
 
 		void VertexData (vector <vec3> &pos, vector <vec4> &col) {
 			//std::sort (genes.begin (), genes.end (), comp);

@@ -30,6 +30,10 @@ namespace EvoLisa {
 			chromosome->Mutate ();
 		}
 
+		~Entity () {
+			chromosome->~Chromosome ();
+		}
+
 		Entity *Mate (Chromosome *c1, Chromosome *c2) {
 			Chromosome *t1 = new Chromosome (c1->Size);
 			int mut1 = (int)c1->Size * Mate_Perc / 100;
@@ -66,8 +70,10 @@ namespace EvoLisa {
 				data.push_back (colour[i].z);
 				data.push_back (colour[i].w);
 			}
-			VertexData (position, colour);
+			//VertexData (position, colour);
 			glBufferData (GL_ARRAY_BUFFER, data.size () * sizeof (GLfloat), &data[0], GL_STATIC_DRAW);
+			position.clear ();
+			colour.clear ();
 		}
 
 		void Copy (Entity *e) {
