@@ -30,8 +30,8 @@ namespace EvoLisa {
 			glGenBuffers (1, &VBO);
 			glGenTextures (1, &text);
 			glBindTexture (GL_TEXTURE_2D, text);
-			glTexParameterf (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-			glTexParameterf (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+			//glTexParameterf (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+			//glTexParameterf (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 			glTexImage2D (GL_TEXTURE_2D, 0, GL_RGB, Tools::WIND_WIDTH , Tools::WIND_HEIGHT, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
 			glBindTexture (GL_TEXTURE_2D, 0);
 			glGenFramebuffers (1, &FBO);
