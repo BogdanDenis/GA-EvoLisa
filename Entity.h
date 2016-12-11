@@ -18,8 +18,8 @@ namespace EvoLisa {
 			Mate_Perc = 10;
 		}
 
-		Entity (int size, int mate_perc) {
-			chromosome = new Chromosome (size);
+		Entity (int ChrSize, int mate_perc) {
+			chromosome = new Chromosome (ChrSize);
 			Mate_Perc = mate_perc;
 		}
 		Entity (int mate_perc, Chromosome *c) {
@@ -30,16 +30,23 @@ namespace EvoLisa {
 			chromosome->Mutate ();
 		}
 
-		Entity *Mate (Chromosome *c1, Chromosome *c2) {
-			Chromosome *t1 = new Chromosome (c1->Size);
-			int mut1 = (int)c1->Size * Mate_Perc / 100;
-			int mut2 = c1->Size - mut1;
-			for (int i = 0; i < c1->Size; i++) {
+		~Entity () {
+			chromosome->~Chromosome ();
+		}
+
+		Entity *Mate (const Entity *e) const {
+			Chromosome *t1 = new Chromosome (this->chromosome->ChrSize);
+			for (int i = 0; i < t1->genes.size (); i++)
+				delete t1->genes[i];
+			t1->genes.reserve (this->chromosome->genes.size ());
+			int mut1 = (int)this->chromosome->ChrSize * Mate_Perc / 100;
+			int mut2 = this->chromosome->ChrSize - mut1;
+			for (int i = 0; i < this->chromosome->ChrSize; i++) {
 				if (i < mut1) {
-					t1->genes[i] = new Gene (c1->genes[i]);
+					t1->genes[i] = new Gene (this->chromosome->genes[i]);
 				}
 				else {
-					t1->genes[i] = new Gene (c2->genes[i]);
+					t1->genes[i] = new Gene (e->chromosome->genes[i]);
 				}
 			}
 			return new Entity (this->Mate_Perc, t1);
@@ -52,7 +59,7 @@ namespace EvoLisa {
 		void BufferData (GLuint VBO, bool renderFittest) {
 			vector <vec3> position;
 			vector <vec4> colour;
-			vector <GLfloat> data (position.size () + colour.size ());
+			vector <GLfloat> data;
 			VertexData (position, colour);
 			for (int i = 0; i < position.size (); i++) {
 				if (renderFittest)
@@ -66,8 +73,12 @@ namespace EvoLisa {
 				data.push_back (colour[i].z);
 				data.push_back (colour[i].w);
 			}
-			VertexData (position, colour);
-			glBufferData (GL_ARRAY_BUFFER, data.size () * sizeof (GLfloat), &data[0], GL_STATIC_DRAW);
+			//VertexData (position, colour);
+			if (data.size ())
+				glBufferData (GL_ARRAY_BUFFER, data.size () * sizeof (GLfloat), data.data (), GL_STATIC_DRAW);
+			position.clear ();
+			colour.clear ();
+			data.clear ();
 		}
 
 		void Copy (Entity *e) {
@@ -75,8 +86,8 @@ namespace EvoLisa {
 			this->chromosome->Copy (e->chromosome);
 		}
 
-		Entity *operator +(Entity *e2) {
-			return this->Mate (new Chromosome (this->chromosome), new Chromosome (e2->chromosome));
+		Entity *operator +(const Entity *&e2) {
+			return this->Mate (e2);
 		}
 
 		bool operator <(Entity *e2) {
