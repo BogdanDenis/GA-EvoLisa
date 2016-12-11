@@ -5,20 +5,16 @@
 namespace EvoLisa {
 
 	using std::vector;
-
-	inline bool comp (Gene* g1, Gene* g2) {
-		return g1->colour.w > g2->colour.w;
-	}
 	
 	class Chromosome {
 	public:
 		vector <Gene *> genes;
-		int Size;
+		int ChrSize;
 
 		void Init (int size) {
-			Size = size;
-			genes.reserve (Size);
-			for (int i = 0; i < Size; i++) {
+			ChrSize = size;
+			genes.reserve (ChrSize);
+			for (int i = 0; i < ChrSize; i++) {
 				Gene *g = new Gene ();
 				genes.push_back (g);
 			}
@@ -28,19 +24,24 @@ namespace EvoLisa {
 			Init (6000);
 		}
 
-		Chromosome (int size) {
-			Init (size);
+		Chromosome (int ChrSize) {
+			Init (ChrSize);
 		}
 
 		Chromosome (Chromosome *c) {
 			for each (Gene *g in c->genes)
 				this->genes.push_back (g);
-			this->Size = c->Size;
+			this->ChrSize = c->ChrSize;
+		}
+		
+		~Chromosome () {
+			for (int i = 0; i < genes.size (); i++)
+				delete genes[i];
 		}
 
 		void VertexData (vector <vec3> &pos, vector <vec4> &col) {
 			//std::sort (genes.begin (), genes.end (), comp);
-			for (int i = 0; i < Size; i++) {
+			for (int i = 0; i < ChrSize; i++) {
 				vector <vec3> p;
 				vector <vec4> c;
 				genes[i]->VertexData (p, c);
@@ -50,18 +51,20 @@ namespace EvoLisa {
 		}
 
 		void Mutate () {
-			for (int i = 0; i < Size; i++) {
+;			for (int i = 0; i < ChrSize; i++) {
 				genes[i]->Mutate ();
 			}
 		}
 
 		void Copy (Chromosome *c) {
-			genes.clear ();
-			genes.reserve (c->Size);
-			for (int i = 0; i < c->Size; i++) {
+			for (int i = 0; i < genes.size (); i++) {
+				genes[i]->Copy (c->genes[i]);
+			}
+			genes.reserve (c->ChrSize);
+			for (int i = 0; i < c->ChrSize; i++) {
 				genes.push_back (new Gene (c->genes[i]));
 			}
-			this->Size = c->Size;
+			this->ChrSize = c->ChrSize;
 		}
 	};
 }

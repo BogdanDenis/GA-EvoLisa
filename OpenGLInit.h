@@ -41,6 +41,7 @@ namespace EvoLisa {
 		glViewport (0, 0, width, height);
 		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		glEnable (GL_BLEND);
+		glDisable (GL_CULL_FACE);
 		return 0;
 	}
 
