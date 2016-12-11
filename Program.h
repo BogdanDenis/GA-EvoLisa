@@ -21,7 +21,7 @@ namespace EvoLisa {
 		Program ();
 		void Init () {
 			iter = 0;
-			original = SOIL_load_image ("MonaLisa2.jpg", &Tools::width, &Tools::height, 0, SOIL_LOAD_RGB);
+			original = SOIL_load_image ("images (10).jpg", &Tools::width, &Tools::height, 0, SOIL_LOAD_RGB);
 			Tools::WIND_HEIGHT = Tools::height;
 			Tools::WIND_WIDTH = Tools::width * 2;
 			InitOpenGL (window, Tools::WIND_WIDTH, Tools::WIND_HEIGHT, 3, 3);

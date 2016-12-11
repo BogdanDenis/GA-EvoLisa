@@ -5,10 +5,6 @@
 namespace EvoLisa {
 
 	using std::vector;
-
-	inline bool comp (Gene* g1, Gene* g2) {
-		return g1->colour.w > g2->colour.w;
-	}
 	
 	class Chromosome {
 	public:
@@ -55,7 +51,7 @@ namespace EvoLisa {
 		}
 
 		void Mutate () {
-			for (int i = 0; i < ChrSize * 10 / 100; i++) {
+;			for (int i = 0; i < ChrSize; i++) {
 				genes[i]->Mutate ();
 			}
 		}

@@ -4,7 +4,7 @@ namespace EvoLisa {
 	
 	Program::Program () {
 		window = NULL;
-		population = Population::Population (10, 10);
+		population = Population::Population (10, 20);
 	}
 
 	void Program::Run () {
@@ -13,7 +13,7 @@ namespace EvoLisa {
 		glBindBuffer (GL_ARRAY_BUFFER, VBO);
 		glUseProgram (shaderProgram.getShaderProgramID ());
 		while (true) {
-			printf ("%d\n", iter++);
+			printf ("%d ", iter++);
 			Render ();
 			population.Mate ();
 			population.Mutate ();

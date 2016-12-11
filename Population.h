@@ -17,6 +17,10 @@ namespace EvoLisa {
 
 	using std::string;
 
+	inline bool comp (Entity *e1, Entity *e2) {
+		return e1->fitness < e2->fitness;
+	}
+
 	class Population {
 		void Init (int Size, int ChrSize) {
 			this->Size = Size;
@@ -38,10 +42,8 @@ namespace EvoLisa {
 		}
 
 		void Mate () {
-			std::sort (population.begin (), population.end ());
-			int lim = Size / 10;
-			if (!lim)
-				lim = 1;
+			std::sort (population.begin (), population.end (), comp);
+			int lim = Size * 15 / 100;
 			for (int i = 0; i < lim; i++) {
 				delete population[Size - i * 2 - 1];
 				delete population[Size - i * 2 - 2];
@@ -49,17 +51,13 @@ namespace EvoLisa {
 				population[Size - i * 2 - 2] = population[i * 2 + 1]->Mate (population[i * 2]);
 			}
 			fittest = population[0];
+			printf ("%u\n", fittest->fitness);
 		}
 
 		void Mutate () {
 			std::random_shuffle (population.begin (), population.end ());
-			int lim = Size * 50 / 100;
-			int mutated = 0;
-			for (int i = 0; i < Size; i++) {
-				if (population[i] != fittest && mutated < lim) {
-					population[i]->Mutate ();
-					mutated++;
-				}
+			for (int i = Size / 4; i < Size / 2; i++) {
+				population[i]->Mutate ();
 			}
 		}
 
@@ -82,37 +80,26 @@ namespace EvoLisa {
 			//WriteToImage (pixel, iter);
 			glDrawBuffer (GL_BACK);
 			glfwSwapBuffers (window);
-			delete pixel;
+			//delete pixel;
 		}
 
 		void WriteToImage (unsigned char *&pixel, int iter) {
 			string filePath = "Images/frame" + std::to_string (iter) + ".ppm";
-			std::ofstream out (filePath, std::ios::binary);
-			out.write ("P6 ", 3);
-			string s = std::to_string (Tools::WIND_WIDTH);
-			s += " ";
-			out.write (s.c_str (), s.size ());
-			s = std::to_string (Tools::WIND_HEIGHT);
-			s += " ";
-			out.write (s.c_str (), s.size ());
-			out.write ("255", 4);
+			FILE *imageFile;
+			int height = Tools::WIND_HEIGHT, width = Tools::WIND_WIDTH;
 
-			for (int i = 0; i < Tools::WIND_HEIGHT; i++) {
-				for (int j = Tools::WIND_WIDTH - Tools::width; j < Tools::WIND_WIDTH; j += 3) {
-					char *r = new char[4];
-					itoa (pixel[i * Tools::WIND_HEIGHT + j] * 255, r, 10);
-					char *g = new char[4];
-					itoa (pixel[i * Tools::WIND_HEIGHT + j + 1] * 255, g, 10);
-					char *b = new char[4];
-					itoa (pixel[i * Tools::WIND_HEIGHT + j + 2] * 255, b, 10);
-					out.write (r, sizeof (r));
-					out.write (g, sizeof (g));
-					out.write (b, sizeof (b));
-					delete r;
-					delete g;
-					delete b;
-				}
+			imageFile = fopen ("image.ppm", "wb");
+			if (imageFile == NULL) {
+				perror ("ERROR: Cannot open output file");
+				exit (EXIT_FAILURE);
 			}
+
+			fprintf (imageFile, "P6\n");               // P6 filetype
+			fprintf (imageFile, "%d %d\n", width, height);   // dimensions
+			fprintf (imageFile, "255\n");              // Max pixel
+
+			fwrite (pixel, 1, Tools::WIND_HEIGHT * Tools::WIND_WIDTH * 3, imageFile);
+			fclose (imageFile);
 		}
 
 		void GetImageData (GLuint text, unsigned char *&pixel) {
@@ -141,7 +128,7 @@ namespace EvoLisa {
 				GetImageData (text, pixel);
 				//glReadPixels (0, 0, Tools::WIND_WIDTH, Tools::WIND_HEIGHT, GL_RGB, GL_UNSIGNED_BYTE, pixel);
 				population[i]->fitness = CalculateFitness (pixel, original);
-				delete pixel;
+				//delete pixel;
 				glDrawBuffer (GL_BACK);
 
 			}
@@ -152,17 +139,17 @@ namespace EvoLisa {
 
 		unsigned int CalculateFitness (unsigned char *image, unsigned char *original) {
 			unsigned int fitness = 0;
-			int imBegX = (Tools::WIND_WIDTH - Tools::width) * 3;
+			int imBegX = (Tools::WIND_WIDTH - Tools::width);
 			for (int i = 0; i < Tools::height; i++) {
-				for (int j = imBegX; j < Tools::WIND_WIDTH * 3; j += 3) {
+				for (int j = imBegX; j < Tools::WIND_WIDTH; j++) {
 					short int R1, G1, B1, R2, G2, B2;
 					R1 = G1 = B1 = R2 = G2 = B2 = 0;
-					R1 = image[i * Tools::height * 3 + j];
-					G1 = image[i * Tools::height * 3 + j + 1];
-					B1 = image[i * Tools::height * 3 + j + 2];
-					R2 = original[i * Tools::height * 3 + j];
-					G2 = original[i * Tools::height * 3 + j + 1];
-					B2 = original[i * Tools::height * 3 + j + 2];
+					R1 = image[i * Tools::width * 3 + j * 3];
+					G1 = image[i * Tools::width * 3 + j * 3 + 1];
+					B1 = image[i * Tools::width * 3 + j * 3 + 2];
+					R2 = original[i * Tools::width * 3 + j * 3];
+					G2 = original[i * Tools::width * 3 + j * 3 + 1];
+					B2 = original[i * Tools::width * 3 + j * 3 + 2];
 					int dR = R2 - R1;
 					int dG = G2 - G1;
 					int dB = B2 - B1;

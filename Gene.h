@@ -29,7 +29,7 @@ namespace EvoLisa {
 			//colour.y = Tools::GenerateRandFloat (0.0f, 1.0f);
 			//colour.z = Tools::GenerateRandFloat (0.0f, 1.0f);
 			//colour.w = Tools::GenerateRandFloat (0.0f, 1.0);
-			colour = vec4 (0.0, 0.0, 0.0, 0.235);
+			colour = vec4 (0.0, 0.0, 0.0, 0.3);
 		}
 
 		Gene (Gene *g) {
@@ -57,9 +57,9 @@ namespace EvoLisa {
 			bool OK = false;
 			do {
 				//dA = Tools::GenerateRandFloat (-0.1f, 0.1f);
-				dR = Tools::GenerateRandFloat (-0.01f, 0.01f);
-				dG = Tools::GenerateRandFloat (-0.01f, 0.01f);
-				dB = Tools::GenerateRandFloat (-0.01f, 0.01f);
+				dR = Tools::GenerateRandFloat (-0.05f, 0.05f);
+				dG = Tools::GenerateRandFloat (-0.05f, 0.05f);
+				dB = Tools::GenerateRandFloat (-0.05f, 0.05f);
 				
 				OK = Tools::InRange (colour.x + dR, 0.0f, 1.0f);
 				OK = OK && Tools::InRange (colour.y + dG, 0.0f, 1.0f);
