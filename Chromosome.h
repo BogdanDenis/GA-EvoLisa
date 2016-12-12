@@ -35,30 +35,18 @@ namespace EvoLisa {
 		}
 		
 		~Chromosome () {
-			for (int i = 0; i < genes.size (); i++) {
+			for (int i = 0; i < genes.size (); i++)
 				delete genes[i];
-				genes[i] = NULL;
-			}
 		}
 
 		void VertexData (vector <vec3> &pos, vector <vec4> &col) {
 			//std::sort (genes.begin (), genes.end (), comp);
-			//printf ("%s %d\n", __FILE__, __LINE__);
 			for (int i = 0; i < ChrSize; i++) {
 				vector <vec3> p;
 				vector <vec4> c;
-				if (genes[i]) {
-					//printf ("%s %d\n", __FILE__, __LINE__);
-					genes[i]->VertexData (p, c);
-					//printf ("%s %d\n", __FILE__, __LINE__);
-					if (p.size () && c.size ()) {
-						//printf ("%s %d\n", __FILE__, __LINE__);
-						pos.insert (pos.end (), p.begin (), p.end ());
-						//printf ("%s %d\n", __FILE__, __LINE__);
-						col.insert (col.end (), c.begin (), c.end ());
-						//printf ("%s %d\n", __FILE__, __LINE__);
-					}
-				}
+				genes[i]->VertexData (p, c);
+				pos.insert (pos.end (), p.begin (), p.end ());
+				col.insert (col.end (), c.begin (), c.end ());
 			}
 		}
 

@@ -104,7 +104,6 @@ namespace EvoLisa {
 
 		void GetImageData (GLuint text, unsigned char *&pixel) {
 			glBindTexture (GL_TEXTURE_2D, text);
-			//glPixelStorei (GL_PACK_ALIGNMENT, 2);
 			glGetTexImage (GL_TEXTURE_2D, 0, GL_RGB, GL_UNSIGNED_BYTE, pixel);
 			glBindTexture (GL_TEXTURE_2D, 0);
 		}
@@ -113,35 +112,25 @@ namespace EvoLisa {
 			glBindFramebuffer (GL_FRAMEBUFFER, FBO);
 			glBindVertexArray (VAO);
 			for (int i = 0; i < Size; i++) {
-				if (population[i]) {
-					glBindBuffer (GL_ARRAY_BUFFER, VBO);
-					//printf ("%s %d\n", __FILE__, __LINE__);
-					population[i]->BufferData (VBO, false);
-					//printf ("%s %d\n", __FILE__, __LINE__);
-					glVertexAttribPointer (0, 3, GL_FLOAT, GL_FALSE, 7 * sizeof (GLfloat), (GLvoid *)0);
-					glEnableVertexAttribArray (0);
-					glVertexAttribPointer (1, 4, GL_FLOAT, GL_FALSE, 7 * sizeof (GLfloat), (GLvoid *)(3 * sizeof (GLfloat)));
-					glEnableVertexAttribArray (1);
-					glBindBuffer (GL_ARRAY_BUFFER, 0);
+				glBindBuffer (GL_ARRAY_BUFFER, VBO);
+				population[i]->BufferData (VBO, false);
+				glVertexAttribPointer (0, 3, GL_FLOAT, GL_FALSE, 7 * sizeof (GLfloat), (GLvoid *)0);
+				glEnableVertexAttribArray (0);
+				glVertexAttribPointer (1, 4, GL_FLOAT, GL_FALSE, 7 * sizeof (GLfloat), (GLvoid *)(3 * sizeof (GLfloat)));
+				glEnableVertexAttribArray (1);
+				glBindBuffer (GL_ARRAY_BUFFER, 0);
 
-					glClearColor (1.0, 1.0, 1.0, 1.0f);
-					glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+				glClearColor (1.0, 1.0, 1.0, 1.0f);
+				glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-					//printf ("%s %d\n", __FILE__, __LINE__);
-					glDrawArrays (GL_TRIANGLES, 0, population[i]->chromosome->ChrSize * 3);
-					//printf ("%s %d\n", __FILE__, __LINE__);
-					unsigned char *pixel = new unsigned char[Tools::WIND_WIDTH * Tools::WIND_HEIGHT * 3 * sizeof (unsigned char)];
-					//printf ("%s %d\n", __FILE__, __LINE__);
-					GetImageData (text, pixel);
-					//printf ("%s %d\n", __FILE__, __LINE__);
-					//glReadPixels (0, 0, Tools::WIND_WIDTH, Tools::WIND_HEIGHT, GL_RGB, GL_UNSIGNED_BYTE, pixel);
-					population[i]->fitness = CalculateFitness (pixel, original);
-					//printf ("%s %d\n", __FILE__, __LINE__);
-					//delete[] pixel;
-					glDrawBuffer (GL_BACK);
-					//printf ("%s %d\n", __FILE__, __LINE__);
-					//printf ("%d %d\n", i, Size);
-				}
+				glDrawArrays (GL_TRIANGLES, 0, population[i]->chromosome->ChrSize * 3);
+				unsigned char *pixel = new unsigned char[Tools::WIND_WIDTH * Tools::WIND_HEIGHT * 3];
+				GetImageData (text, pixel);
+				//glReadPixels (0, 0, Tools::WIND_WIDTH, Tools::WIND_HEIGHT, GL_RGB, GL_UNSIGNED_BYTE, pixel);
+				population[i]->fitness = CalculateFitness (pixel, original);
+				//delete pixel;
+				glDrawBuffer (GL_BACK);
+
 			}
 			glfwSwapBuffers (window);
 			glBindFramebuffer (GL_FRAMEBUFFER, 0);
