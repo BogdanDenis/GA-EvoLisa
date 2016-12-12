@@ -74,8 +74,7 @@ namespace EvoLisa {
 				data.push_back (colour[i].w);
 			}
 			//VertexData (position, colour);
-			if (data.size ())
-				glBufferData (GL_ARRAY_BUFFER, data.size () * sizeof (GLfloat), data.data (), GL_STATIC_DRAW);
+			glBufferData (GL_ARRAY_BUFFER, data.size () * sizeof (GLfloat), data.data (), GL_STATIC_DRAW);
 			position.clear ();
 			colour.clear ();
 			data.clear ();
