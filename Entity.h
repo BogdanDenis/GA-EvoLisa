@@ -53,32 +53,52 @@ namespace EvoLisa {
 		}
 
 		void VertexData (vector <vec3> &pos, vector <vec4> &col) {
-			chromosome->VertexData (pos, col);
+			if (chromosome)
+				chromosome->VertexData (pos, col);
 		}
 
 		void BufferData (GLuint VBO, bool renderFittest) {
-			vector <vec3> position;
-			vector <vec4> colour;
-			vector <GLfloat> data;
+			//printf ("%s %d %d\n", __FILE__, __LINE__, chromosome->ChrSize);
+			vector <vec3> position (this->chromosome->ChrSize * 3);
+			//printf ("%s %d\n", __FILE__, __LINE__);
+			vector <vec4> colour (this->chromosome->ChrSize * 3);
+			//printf ("%s %d\n", __FILE__, __LINE__);
+			vector <GLfloat> data (position.capacity () + colour.capacity ());
+			//printf ("%s %d\n", __FILE__, __LINE__);
 			VertexData (position, colour);
-			for (int i = 0; i < position.size (); i++) {
-				if (renderFittest)
-					data.push_back (position[i].x - 1.0);
-				else
-					data.push_back (position[i].x);
-				data.push_back (position[i].y);
-				data.push_back (position[i].z);
-				data.push_back (colour[i].x);
-				data.push_back (colour[i].y);
-				data.push_back (colour[i].z);
-				data.push_back (colour[i].w);
+			if (position.size () && colour.size ()) {
+				for (int i = 0; i < position.size (); i++) {
+					//printf ("%s %d\n", __FILE__, __LINE__);
+					if (renderFittest)
+						data.push_back (position[i].x - 1.0);
+					else
+						data.push_back (position[i].x);
+					data.push_back (position[i].y);
+					data.push_back (position[i].z);
+					data.push_back (colour[i].x);
+					data.push_back (colour[i].y);
+					data.push_back (colour[i].z);
+					data.push_back (colour[i].w);
+					//printf ("%s %d\n", __FILE__, __LINE__);
+				}
 			}
+			//printf ("%s %d\n", __FILE__, __LINE__);
 			//VertexData (position, colour);
 			if (data.size ())
-				glBufferData (GL_ARRAY_BUFFER, data.size () * sizeof (GLfloat), data.data (), GL_STATIC_DRAW);
-			position.clear ();
-			colour.clear ();
-			data.clear ();
+				glBufferData (GL_ARRAY_BUFFER, data.size () * sizeof (GLfloat), &data[0], GL_STATIC_DRAW);
+			//printf ("%s %d\n", __FILE__, __LINE__);
+			if (position.size ()) {
+				//printf ("%s %d\n", __FILE__, __LINE__);
+				position.clear ();
+			}
+			if (colour.size ()) {
+				//printf ("%s %d\n", __FILE__, __LINE__);
+				colour.clear ();
+			}
+			if (data.size ()) {
+				//printf ("%s %d\n", __FILE__, __LINE__);
+				data.clear ();
+			}
 		}
 
 		void Copy (Entity *e) {

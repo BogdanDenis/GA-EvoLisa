@@ -40,13 +40,16 @@ namespace EvoLisa {
 		~Gene () {
 			for (int i = 0; i < 3; i++) {
 				pos[i]->~Vertex ();
+				pos[i] = NULL;
 			}
 		}
 
 		void VertexData (vector <vec3> &pos, vector <vec4> &col) {
 			for (int i = 0; i < 3; i++) {
-				pos.push_back (this->pos[i]->pos);
-				col.push_back (this->colour);
+				if (this->pos[i]) {
+					pos.push_back (this->pos[i]->pos);
+					col.push_back (this->colour);
+				}
 			}
 		}
 
