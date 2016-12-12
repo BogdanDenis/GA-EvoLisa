@@ -23,7 +23,8 @@ namespace EvoLisa {
 			iter = 0;
 			original = SOIL_load_image ("MonaLisa2.jpg", &Tools::width, &Tools::height, 0, SOIL_LOAD_RGB);
 			Tools::WIND_HEIGHT = Tools::height;
-			Tools::WIND_WIDTH = Tools::width * 2;
+			Tools::WIND_WIDTH = Tools::width;
+			Tools::Elitism = (int)ceil (population.Size * 0.75);
 			InitOpenGL (window, Tools::WIND_WIDTH, Tools::WIND_HEIGHT, 3, 3);
 			shaderProgram = ShaderProgram ("ImageShader.vert", "ImageShader.frag");
 			glGenVertexArrays (1, &VAO);
@@ -40,7 +41,6 @@ namespace EvoLisa {
 			glBindFramebuffer (GL_FRAMEBUFFER, 0);
 		}
 		void Run ();
-		void Render ();
 	};
 }
 

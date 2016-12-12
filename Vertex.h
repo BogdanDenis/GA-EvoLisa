@@ -13,9 +13,13 @@ namespace EvoLisa {
 	public:
 		vec3 pos;
 		Vertex () {
-			pos.x = Tools::GenerateRandFloat (0.0f, 1.0f);
+			pos.x = Tools::GenerateRandFloat (-1.0f, 1.0f);
 			pos.y = Tools::GenerateRandFloat (-1.0f, 1.0f);
 			pos.z = 0.0f;
+		}
+		
+		Vertex (const Vertex *v) {
+			this->pos = v->pos;
 		}
 
 		~Vertex () {}
@@ -27,7 +31,7 @@ namespace EvoLisa {
 				dx = Tools::GenerateRandFloat (-0.01f, 0.01f);
 				dy = Tools::GenerateRandFloat (-0.01f, 0.01f);
 
-				OK = Tools::InRange (pos.x + dx, 0.0f, 1.0f);
+				OK = Tools::InRange (pos.x + dx, -1.0f, 1.0f);
 				OK = OK && Tools::InRange (pos.y + dy, -1.0f, 1.0f);
 			} while (!OK);
 			pos.x += dx;

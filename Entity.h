@@ -26,8 +26,8 @@ namespace EvoLisa {
 			this->chromosome = c;
 			this->Mate_Perc = mate_perc;
 		}
-		void Mutate () {
-			chromosome->Mutate ();
+		void Mutate (bool mode) {
+			chromosome->Mutate (mode);
 		}
 
 		~Entity () {
@@ -37,7 +37,7 @@ namespace EvoLisa {
 		Entity *Mate (const Entity *e) const {
 			Chromosome *t1 = new Chromosome (this->chromosome->ChrSize);
 			for (int i = 0; i < t1->genes.size (); i++)
-				delete t1->genes[i];
+				t1->genes[i]->~Gene ();
 			t1->genes.reserve (this->chromosome->genes.size ());
 			int mut1 = (int)this->chromosome->ChrSize * Mate_Perc / 100;
 			int mut2 = this->chromosome->ChrSize - mut1;
@@ -82,7 +82,8 @@ namespace EvoLisa {
 
 		void Copy (Entity *e) {
 			this->Mate_Perc = e->Mate_Perc;
-			this->chromosome->Copy (e->chromosome);
+			this->chromosome->~Chromosome ();
+			this->chromosome = new Chromosome (e->chromosome);
 		}
 
 		Entity *operator +(const Entity *&e2) {

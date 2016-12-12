@@ -4,7 +4,7 @@ namespace EvoLisa {
 	
 	Program::Program () {
 		window = NULL;
-		population = Population::Population (10, 10);
+		population = Population::Population (20, 100);
 	}
 
 	void Program::Run () {
@@ -14,15 +14,7 @@ namespace EvoLisa {
 		glUseProgram (shaderProgram.getShaderProgramID ());
 		while (true) {
 			printf ("%d\n", iter++);
-			Render ();
-			population.Mate ();
-			population.Mutate ();
+			population.GeneratePopulation (window, original, FBO, VAO, VBO, text, iter);
 		}
-	}
-
-	void Program::Render () {
-		population.RenderPopulation (window, original, VAO, VBO, FBO, text, iter);
-		
-		glfwPollEvents ();
 	}
 }
