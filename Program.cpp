@@ -4,25 +4,20 @@ namespace EvoLisa {
 	
 	Program::Program () {
 		window = NULL;
-		population = Population::Population (10, 20);
+		population = Population::Population (100, 150);
 	}
 
 	void Program::Run () {
 		iter = 0;
 		glBindVertexArray (VAO);
-		glBindBuffer (GL_ARRAY_BUFFER, VBO);
 		glUseProgram (shaderProgram.getShaderProgramID ());
+		glBindFramebuffer (GL_FRAMEBUFFER, FBO);
+		for (int i = 0; i < population.Size; i++)
+			population.RenderEntity (i, window, original, VBO, text);
+		glBindFramebuffer (GL_FRAMEBUFFER, 0);
 		while (true) {
-			printf ("%d ", iter++);
-			Render ();
-			population.Mate ();
-			population.Mutate ();
+			printf ("%d %d\n", iter++, population.fittest->fitness / 30000);
+			population.GeneratePopulation (window, original, FBO, VAO, VBO, text, iter);
 		}
-	}
-
-	void Program::Render () {
-		population.RenderPopulation (window, original, VAO, VBO, FBO, text, iter);
-		
-		glfwPollEvents ();
 	}
 }
