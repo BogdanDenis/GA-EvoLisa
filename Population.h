@@ -43,40 +43,38 @@ namespace EvoLisa {
 
 		void GeneratePopulation (GLFWwindow *window, unsigned char *original, GLuint FBO, GLuint VAO, GLuint VBO, GLuint text, int iter) {
 			std::sort (population.begin (), population.end (), cmp);
-			for (int i = 0; i < Size - 1; i++) {
-				if (i > Size - Tools::Elitism) {
-					if (Tools::GenerateRandFloat (0.0, 1.0) < Tools::CrossoverProb) {
-						int i1, i2;
-						do {
-							i1 = Tools::GenerateRandInt (0, Size);
-						} while (i1 == i);
-						do {
-							i2 = Tools::GenerateRandInt (0, Size);
-						} while (i2 == i || i2 == i1);
-						population[i]->~Entity ();
-						population[i] = population[i1]->Mate (population[i2]);
-					}
-					else {
-						if (Tools::GenerateRandFloat (0.0, 1.0) < 0.95)
-							population[i]->Mutate (false);
-						else population[i]->Mutate (true);
-					}
+			fittest = population[0];
+			for (int i = Size - Tools::Elitism + 1; i < Size - 1; i++) {
+				if (Tools::GenerateRandFloat (0.0, 1.0) < Tools::CrossoverProb) {
+					int i1, i2;
+					do {
+						i1 = Tools::GenerateRandInt (0, Size);
+					} while (i1 == i);
+					do {
+						i2 = Tools::GenerateRandInt (0, Size);
+					} while (i2 == i || i2 == i1);
+					population[i]->~Entity ();
+					if (Tools::GenerateRandFloat (0.0, 1.0) < Tools::CrOverTypeProb)
+						population[i] = population[i1]->Mate (population[i2], true);
+					else
+						population[i] = population[i1]->Mate (population[i2], false);
+				}
+				else {
+					if (Tools::GenerateRandFloat (0.0, 1.0) < Tools::MutTypeProb)
+						population[i]->Mutate (false);
+					else population[i]->Mutate (true);
 				}
 			}
 			glBindFramebuffer (GL_FRAMEBUFFER, FBO);
-			glBindVertexArray (VAO);
-			for (int i = 0; i < Size; i++) {
-				if (i > Size - Tools::Elitism)
-					RenderEntity (i, window, original, VBO, text);
+			for (int i = Size - Tools::Elitism + 1; i < Size; i++) {
+				RenderEntity (i, window, original, VBO, text);
 			}
 			glBindFramebuffer (GL_FRAMEBUFFER, 0);
 			RenderFittest (window, VBO, iter);
-			glBindVertexArray (0);
 		}
 
 		void RenderFittest (GLFWwindow *window, GLuint VBO, int iter) {
-			glBindBuffer (GL_ARRAY_BUFFER, VBO);
-			fittest->BufferData (VBO, false);
+			fittest->BufferData (VBO);
 			glVertexAttribPointer (0, 3, GL_FLOAT, GL_FALSE, 7 * sizeof (GLfloat), (GLvoid *)0);
 			glEnableVertexAttribArray (0);
 			glVertexAttribPointer (1, 4, GL_FLOAT, GL_FALSE, 7 * sizeof (GLfloat), (GLvoid *)(3 * sizeof (GLfloat)));
@@ -87,6 +85,12 @@ namespace EvoLisa {
 			glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 			glDrawArrays (GL_TRIANGLES, 0, fittest->chromosome->ChrSize * 3);
+			if (!(iter % 100)) {
+				unsigned char *pixel = new unsigned char[Tools::WIND_WIDTH * Tools::WIND_HEIGHT * 3];
+				glReadPixels (0, 0, Tools::WIND_WIDTH, Tools::WIND_HEIGHT, GL_RGB, GL_UNSIGNED_BYTE, pixel);
+				WriteToImage (pixel, iter);
+				delete[] pixel;
+			}
 			glDrawBuffer (GL_BACK);
 			glfwSwapBuffers (window);
 		}
@@ -115,8 +119,7 @@ namespace EvoLisa {
 		}
 
 		void RenderEntity (int i, GLFWwindow *window, unsigned char *original, GLuint VBO, GLuint text) {
-			glBindBuffer (GL_ARRAY_BUFFER, VBO);
-			population[i]->BufferData (VBO, false);
+			population[i]->BufferData (VBO);
 			glVertexAttribPointer (0, 3, GL_FLOAT, GL_FALSE, 7 * sizeof (GLfloat), (GLvoid *)0);
 			glEnableVertexAttribArray (0);
 			glVertexAttribPointer (1, 4, GL_FLOAT, GL_FALSE, 7 * sizeof (GLfloat), (GLvoid *)(3 * sizeof (GLfloat)));
@@ -131,37 +134,28 @@ namespace EvoLisa {
 			GetImageData (text, pixel);
 			//glReadPixels (0, 0, Tools::WIND_WIDTH, Tools::WIND_HEIGHT, GL_RGB, GL_UNSIGNED_BYTE, pixel);
 			population[i]->fitness = CalculateFitness (pixel, original);
-			if (i == Size - Tools::Elitism + 1) {
-				fittest = population[i];
-			}
-			else {
-				if (population[i]->fitness < fittest->fitness)
-					fittest = population[i];
-			}
 			delete[] pixel;
-			glDrawBuffer (GL_BACK);
+			//glDrawBuffer (GL_BACK);
 			//glfwSwapBuffers (window);
 		}
 
 		unsigned int CalculateFitness (unsigned char *image, unsigned char *original) {
 			unsigned int fitness = 0;
-			int imBegX = (Tools::WIND_WIDTH - Tools::width) * 3;
-			for (int i = 0; i < Tools::height; i++) {
-				for (int j = 0; j < Tools::WIND_WIDTH * 3; j++) {
-					short int R1, G1, B1, R2, G2, B2;
-					R1 = G1 = B1 = R2 = G2 = B2 = 0;
-					R1 = image[i * Tools::width * 3 + j * 3];
-					G1 = image[i * Tools::width * 3 + j * 3 + 1];
-					B1 = image[i * Tools::width * 3 + j * 3 + 2];
-					R2 = original[i * Tools::width * 3 + j * 3];
-					G2 = original[i * Tools::width * 3 + j * 3 + 1];
-					B2 = original[i * Tools::width * 3 + j * 3 + 2];
-					int dR = R2 - R1;
-					int dG = G2 - G1;
-					int dB = B2 - B1;
-					unsigned int pixelDif = (dR * dR + dG * dG + dB * dB);
-					fitness += pixelDif;
-				}
+			#pragma omp parallel for
+			for (int i = 0; i < Tools::WIND_HEIGHT * Tools::WIND_WIDTH * 3; i += 3) {
+				short int R1, G1, B1, R2, G2, B2;
+				R1 = G1 = B1 = R2 = G2 = B2 = 0;
+				R1 = image[i];
+				G1 = image[i + 1];
+				B1 = image[i + 2];
+				R2 = original[i];
+				G2 = original[i + 1];
+				B2 = original[i + 2];
+				int dR = R2 - R1;
+				int dG = G2 - G1;
+				int dB = B2 - B1;
+				unsigned int pixelDif = (dR * dR + dG * dG + dB * dB);
+				fitness += pixelDif;
 			}
 			return fitness;
 		}

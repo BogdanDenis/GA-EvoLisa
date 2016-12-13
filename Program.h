@@ -21,7 +21,7 @@ namespace EvoLisa {
 		Program ();
 		void Init () {
 			iter = 0;
-			original = SOIL_load_image ("MonaLisa2.jpg", &Tools::width, &Tools::height, 0, SOIL_LOAD_RGB);
+			original = SOIL_load_image ("mona-200.bmp", &Tools::width, &Tools::height, 0, SOIL_LOAD_RGB);
 			Tools::WIND_HEIGHT = Tools::height;
 			Tools::WIND_WIDTH = Tools::width;
 			Tools::Elitism = (int)ceil (population.Size * 0.75);
