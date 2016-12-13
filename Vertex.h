@@ -13,25 +13,45 @@ namespace EvoLisa {
 	public:
 		vec3 pos;
 		Vertex () {
-			pos.x = Tools::GenerateRandFloat (0.0f, 1.0f);
+			pos.x = Tools::GenerateRandFloat (-1.0f, 1.0f);
 			pos.y = Tools::GenerateRandFloat (-1.0f, 1.0f);
 			pos.z = 0.0f;
+		}
+		
+		Vertex (const Vertex *v) {
+			this->pos = v->pos;
 		}
 
 		~Vertex () {}
 
-		void Mutate () {
-			bool OK = false;
+		void Perturbation () {
 			float dx, dy;
-			do {
-				dx = Tools::GenerateRandFloat (-0.005f, 0.005f);
-				dy = Tools::GenerateRandFloat (-0.005f, 0.005f);
+			if (Tools::GenerateRandFloat (0.0, 1.0) < Tools::VertPertrProb) {
+				dx = Tools::GenerateRandFloat (-0.02f, 0.02f);
+				pos.x += dx;
+				if (!Tools::InRange (pos.x, -1.0, 1.0))
+					pos.x = Tools::GenerateRandFloat (-1.0, 1.0);
+			}
+			if (Tools::GenerateRandFloat (0.0, 1.0) < Tools::VertPertrProb) {
+				dy = Tools::GenerateRandFloat (-0.02f, 0.02f);
+				pos.y += dy;
+				if (!Tools::InRange (pos.y, -1.0, 1.0))
+					pos.y = Tools::GenerateRandFloat (-1.0, 1.0);
+			}
+		}
 
-				OK = Tools::InRange (pos.x + dx, 0.0f, 1.0f);
-				OK = OK && Tools::InRange (pos.y + dy, -1.0f, 1.0f);
-			} while (!OK);
-			pos.x += dx;
-			pos.y += dy;
+		void NewVertex () {
+			if (Tools::GenerateRandFloat (0.0, 1.0) < Tools::VertRandProb)
+				pos.x = Tools::GenerateRandFloat (-1.0, 1.0);
+			if (Tools::GenerateRandFloat (0.0, 1.0) < Tools::VertRandProb)
+				pos.y = Tools::GenerateRandFloat (-1.0, 1.0);
+		}
+
+		void Mutate (bool random) {
+			if (!random) {
+				Perturbation ();
+			}
+			else NewVertex ();
 		}
 	};
 }
