@@ -29,36 +29,40 @@ namespace EvoLisa {
 		}
 
 		Chromosome (Chromosome *c) {
-			for each (Gene *g in c->genes) {
-				this->genes.push_back (new Gene (g));
-			}
+			for each (Gene *g in c->genes)
+				this->genes.push_back (g);
 			this->ChrSize = c->ChrSize;
 		}
 		
 		~Chromosome () {
 			for (int i = 0; i < genes.size (); i++)
 				delete genes[i];
-			genes.clear ();
 		}
 
-		void Mutate (bool mode) {
+		void VertexData (vector <vec3> &pos, vector <vec4> &col) {
+			//std::sort (genes.begin (), genes.end (), comp);
 			for (int i = 0; i < ChrSize; i++) {
-				genes[i]->Mutate (mode);
+				vector <vec3> p;
+				vector <vec4> c;
+				genes[i]->VertexData (p, c);
+				pos.insert (pos.end (), p.begin (), p.end ());
+				col.insert (col.end (), c.begin (), c.end ());
 			}
-			if (Tools::GenerateRandFloat (0.0, 1.0) < Tools::SwapProb) {
-				int i1 = Tools::GenerateRandInt (0, ChrSize);
-				int i2;
-				do {
-					i2 = Tools::GenerateRandInt (0, ChrSize);
-				} while (i1 == i2);
-				std::swap (genes[i1], genes[i2]);
+		}
+
+		void Mutate () {
+;			for (int i = 0; i < ChrSize; i++) {
+				genes[i]->Mutate ();
 			}
 		}
 
 		void Copy (Chromosome *c) {
+			for (int i = 0; i < genes.size (); i++) {
+				genes[i]->Copy (c->genes[i]);
+			}
+			genes.reserve (c->ChrSize);
 			for (int i = 0; i < c->ChrSize; i++) {
-				delete genes[i];
-				genes[i] = new Gene (c->genes[i]);
+				genes.push_back (new Gene (c->genes[i]));
 			}
 			this->ChrSize = c->ChrSize;
 		}
