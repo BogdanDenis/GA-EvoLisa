@@ -22,27 +22,32 @@ namespace EvoLisa {
 			chromosome = new Chromosome (ChrSize);
 			Mate_Perc = mate_perc;
 		}
+
 		Entity (int mate_perc, Chromosome *c) {
 			this->chromosome = c;
 			this->Mate_Perc = mate_perc;
 		}
-		void Mutate () {
-			chromosome->Mutate ();
+
+		Entity (const Entity *e) {
+			this->chromosome = new Chromosome (e->chromosome);
+		}
+
+		void Mutate (bool mode) {
+			chromosome->Mutate (mode);
 		}
 
 		~Entity () {
 			chromosome->~Chromosome ();
 		}
 
-		Entity *Mate (const Entity *e) const {
+		Entity *OnePoint (const Entity *e) const {
 			Chromosome *t1 = new Chromosome (this->chromosome->ChrSize);
 			for (int i = 0; i < t1->genes.size (); i++)
 				delete t1->genes[i];
 			t1->genes.reserve (this->chromosome->genes.size ());
-			int mut1 = (int)this->chromosome->ChrSize * Mate_Perc / 100;
-			int mut2 = this->chromosome->ChrSize - mut1;
+			int p = Tools::GenerateRandInt (0, e->chromosome->ChrSize);
 			for (int i = 0; i < this->chromosome->ChrSize; i++) {
-				if (i < mut1) {
+				if (i < p) {
 					t1->genes[i] = new Gene (this->chromosome->genes[i]);
 				}
 				else {
@@ -52,42 +57,51 @@ namespace EvoLisa {
 			return new Entity (this->Mate_Perc, t1);
 		}
 
-		void VertexData (vector <vec3> &pos, vector <vec4> &col) {
-			chromosome->VertexData (pos, col);
+		Entity *RandMate (const Entity *e) const {
+			Chromosome *t1 = new Chromosome (this->chromosome->ChrSize);
+			for (int i = 0; i < t1->genes.size (); i++)
+				delete t1->genes[i];
+			t1->genes.reserve (this->chromosome->genes.size ());
+			for (int i = 0; i < e->chromosome->ChrSize; i++) {
+				if (Tools::GenerateRandFloat (0.0, 1.0) < 0.5) {
+					t1->genes[i] = new Gene (e->chromosome->genes[i]);
+				}
+				else
+					t1->genes[i] = new Gene (this->chromosome->genes[i]);
+			}
+			return new Entity (this->Mate_Perc, t1);
 		}
 
-		void BufferData (GLuint VBO, bool renderFittest) {
-			vector <vec3> position;
-			vector <vec4> colour;
+		Entity *Mate (const Entity *e, bool onePoint) const {
+			if (onePoint)
+				return OnePoint (e);
+			else
+				return RandMate (e);
+		}
+
+		void BufferData (GLuint VBO) {
+			glBindBuffer (GL_ARRAY_BUFFER, VBO);
 			vector <GLfloat> data;
-			VertexData (position, colour);
-			for (int i = 0; i < position.size (); i++) {
-				if (renderFittest)
-					data.push_back (position[i].x - 1.0);
-				else
-					data.push_back (position[i].x);
-				data.push_back (position[i].y);
-				data.push_back (position[i].z);
-				data.push_back (colour[i].x);
-				data.push_back (colour[i].y);
-				data.push_back (colour[i].z);
-				data.push_back (colour[i].w);
+			data.reserve (this->chromosome->ChrSize * 3 * 7);
+			for (int j = 0; j < this->chromosome->ChrSize; j++) {
+				for (int k = 0; k < 3; k++) {
+					data.push_back (this->chromosome->genes[j]->pos[k]->pos.x);
+					data.push_back (this->chromosome->genes[j]->pos[k]->pos.y);
+					data.push_back (this->chromosome->genes[j]->pos[k]->pos.z);
+					data.push_back (this->chromosome->genes[j]->colour.x);
+					data.push_back (this->chromosome->genes[j]->colour.y);
+					data.push_back (this->chromosome->genes[j]->colour.z);
+					data.push_back (this->chromosome->genes[j]->colour.w);
+				}
 			}
-			//VertexData (position, colour);
-			if (data.size ())
-				glBufferData (GL_ARRAY_BUFFER, data.size () * sizeof (GLfloat), data.data (), GL_STATIC_DRAW);
-			position.clear ();
-			colour.clear ();
+			glBufferData (GL_ARRAY_BUFFER, data.size () * sizeof (GLfloat), &data[0], GL_STATIC_DRAW);
 			data.clear ();
 		}
 
 		void Copy (Entity *e) {
 			this->Mate_Perc = e->Mate_Perc;
-			this->chromosome->Copy (e->chromosome);
-		}
-
-		Entity *operator +(const Entity *&e2) {
-			return this->Mate (e2);
+			delete this->chromosome;
+			this->chromosome = new Chromosome (e->chromosome);
 		}
 
 		bool operator <(Entity *e2) {
