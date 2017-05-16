@@ -3,4 +3,7 @@ Evolutionary image approximation
 
 
 This is a project for learning Genetic Algorithms
-I'm working on a program to approximate images (currently, Mona Lisa)
+I'm working on a program to approximate images.
+
+Written in C++ using OpenGL for rendering.
+
