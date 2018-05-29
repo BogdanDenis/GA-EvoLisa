@@ -2,7 +2,7 @@
 #include <random>
 #include <vector>
 
-#include "Program.h"
+#include "Program.cpp"
 
 using std::vector;
 using EvoLisa::Program;

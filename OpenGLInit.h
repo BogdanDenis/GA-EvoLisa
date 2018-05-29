@@ -2,7 +2,7 @@
 #define _OPENGL_INIT_
 
 #include <GL/glew.h>
-#include <glfw3.h>
+#include <GLFW/glfw3.h>
 #include <GL/freeglut.h>
 #include <fstream>
 

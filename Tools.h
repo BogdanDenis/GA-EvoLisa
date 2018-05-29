@@ -2,7 +2,7 @@
 #define _TOOLS_H_
 
 #include <random>
-#include <SOIL.h>
+#include <SOIL/SOIL.h>
 
 namespace EvoLisa {
 	class Tools {

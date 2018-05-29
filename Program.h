@@ -2,8 +2,9 @@
 #define _PROGRAM_H_
 
 #include <GL/glew.h>
-#include <glfw3.h>
+#include <GLFW/glfw3.h>
 #include <GL/freeglut.h>
+#include <SOIL/SOIL.h>
 
 #include "OpenGLInit.h"
 #include "Population.h"
@@ -21,7 +22,7 @@ namespace EvoLisa {
 		Program ();
 		void Init () {
 			iter = 0;
-			original = SOIL_load_image ("mona-200.bmp", &Tools::width, &Tools::height, 0, SOIL_LOAD_RGB);
+			original = SOIL_load_image ("mona-200.jpg", &Tools::width, &Tools::height, 0, SOIL_LOAD_RGB);
 			Tools::WIND_HEIGHT = Tools::height;
 			Tools::WIND_WIDTH = Tools::width;
 			Tools::Elitism = (int)ceil (population.Size * 0.75);

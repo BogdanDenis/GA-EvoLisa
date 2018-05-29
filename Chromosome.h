@@ -29,7 +29,7 @@ namespace EvoLisa {
 		}
 
 		Chromosome (Chromosome *c) {
-			for each (Gene *g in c->genes) {
+			for (auto g : c->genes) {
 				this->genes.push_back (new Gene (g));
 			}
 			this->ChrSize = c->ChrSize;

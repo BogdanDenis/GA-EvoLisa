@@ -1,9 +1,9 @@
 #ifndef _VERTEX_H_
 #define _VERTEX_H_
 
-#include <glm.hpp>
+#include <glm/glm.hpp>
 
-#include "Tools.h"
+#include "Tools.cpp"
 
 namespace EvoLisa {
 

@@ -1,7 +1,7 @@
 #ifndef _GENE_H_
 #define _GENE_H_
 
-#include <glm.hpp>
+#include <glm/glm.hpp>
 #include <vector>
 
 #include "Vertex.h"

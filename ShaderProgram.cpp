@@ -8,7 +8,7 @@ namespace EvoLisa {
 		CreateShader (GL_VERTEX_SHADER, verShaderSourcePath);
 		CreateShader (GL_FRAGMENT_SHADER, fragShaderSourcePath);
 		GLint shaderProgram = glCreateProgram ();
-		for each (GLuint i in shaderIDs) {
+		for (auto i : shaderIDs) {
 			glAttachShader (shaderProgram, i);
 		}
 		glLinkProgram (shaderProgram);
@@ -49,7 +49,7 @@ namespace EvoLisa {
 		CreateShader (T, filePath);
 		glDeleteProgram (shaderProgramID);
 		GLint shaderProgram = glCreateProgram ();
-		for each (GLuint i in shaderIDs) {
+		for (auto i : shaderIDs) {
 			glAttachShader (shaderProgram, i);
 		}
 		glLinkProgram (shaderProgram);

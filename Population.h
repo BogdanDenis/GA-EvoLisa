@@ -5,13 +5,13 @@
 #include <algorithm>
 #include <string>
 #include <fstream>
-#include <SOIL.h>
-#include <gtc/matrix_transform.hpp>
-#include <gtc/type_ptr.hpp>
+#include <SOIL/SOIL.h>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 
 #include "Entity.h"
-#include "ShaderProgram.h"
+#include "ShaderProgram.cpp"
 
 namespace EvoLisa {
 
@@ -96,7 +96,7 @@ namespace EvoLisa {
 		}
 
 		void WriteToImage (unsigned char *&pixel, int iter) {
-			string filePath = "Images/frame" + std::to_string (iter) + ".ppm";
+			string filePath = "./images/frame" + std::to_string (iter) + ".ppm";
 			FILE *imageFile;
 			imageFile = fopen (filePath.c_str (), "wb");
 			if (imageFile == NULL) {

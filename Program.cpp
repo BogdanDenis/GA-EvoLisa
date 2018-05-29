@@ -4,7 +4,7 @@ namespace EvoLisa {
 	
 	Program::Program () {
 		window = NULL;
-		population = Population::Population (100, 150);
+		population = Population (100, 150);
 	}
 
 	void Program::Run () {

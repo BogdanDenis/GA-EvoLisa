@@ -2,7 +2,7 @@
 #define _ENTITY_H_
 
 #include <GL/glew.h>
-#include <glfw3.h>
+#include <GLFW/glfw3.h>
 #include <GL/freeglut.h>
 
 #include "Chromosome.h"
